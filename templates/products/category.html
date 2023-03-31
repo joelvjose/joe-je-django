@@ -1,0 +1,46 @@
+{% extends 'products/adminbase.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-sm-12">
+            <nav class="navbar d-flex alert alert-info justify-content-between">
+              <h3 >Categories</h3>
+              <form class="form-inline d-flex">
+                <input class="form-control mr-sm-2" name ="q" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+              </form>
+              <a href = "{% url 'products:add_category' %}" class ="btn btn-primary btn-sm">Add Category</a>
+            </nav>
+            {% if category %}
+            <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">Category Name</th>
+                    <th scope="col">Slug</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for cat in category %}
+                  <tr>
+                    <th scope="row">{{cat.cat_name}}</th>
+                    <td>{{cat.slug}}</td>
+                    <td>
+                        <a href = "{% url 'products:update_category' cat.id %}" class ="btn btn-warning btn-sm">Edit</a>
+                        <form action="{% url 'products:delete_category' cat.id %}" method="post" class="d-inline">{% csrf_token %}
+                            <input type="submit" class="btn btn-danger" value="Delete">
+                        </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            {% else %}
+                <h3 class="text-center alert alert-warning ">No Records Found</h3>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'products/adminbase.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+<div class="container mt-5">
+    <h2 class="text-center alert alert-danger">Product Category Panel</h2>
+</div>
+<div class="row">
+    <div class="col-sm-8 offset-2">
+        <h4 class="alert alert-info">Add New Category</h4>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{form|crispy}}
+            <input type="submit" class="btn btn-success" value="Add">
+            <a href="{% url 'products:category_list' %}" class="btn btn-info">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
