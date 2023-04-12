@@ -1,6 +1,19 @@
 {% extends 'products/adminbase.html' %}
 {% load static %}
 
+{% block nav %}
+<div class="navbar-nav w-100">
+    <a href="{% url 'products:Admin_Home' %}" class="nav-item nav-link"><i class="fa fa-home me-2"></i>Dashboard</a>
+    <a href="{% url 'products:customer_list' %}" class="nav-item nav-link active"><i class="fa fa-user me-2"></i>Customer</a>
+    <a href="{% url 'products:category_list' %}" class="nav-item nav-link"><i class="fa fa-file-alt me-2"></i>Categories</a>
+    <a href="{% url 'products:product_list' %}" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Products</a>
+    <a href="{% url 'products:variation_list' %}" class="nav-item nav-link"><i class="fa fa-clone me-2"></i>Variations</a>
+    <a href="form.html" class="nav-item nav-link"><i class="fa fa-truck me-2"></i>Orders</a>
+    <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Banner</a>
+    <a href="chart.html" class="nav-item nav-link"><i class="fa fa-gift me-2"></i>Coupons</a>
+</div>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
     <div class="row">
@@ -11,7 +24,6 @@
                 <input class="form-control mr-sm-2" name ="q" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
               </form>
-              <button class="btn btn-primary px-3 my-2 my-sm-0" type="submit">Add customer</button>
             </nav>
             {% if users %}
             <table class="table table-hover">

@@ -2,6 +2,24 @@
 {% load static %}
 {% block title %}JOE&JEE | Shop{% endblock %}
 
+
+{% block nav%}
+<ul>
+    <li><a href="{% url 'joejee:Home' %}">Home</a></li>
+    <li class="active"><a href="{% url 'joejee:Shop' %}">Shop</a></li>
+    <li><a href="#">Pages</a>
+        <ul class="dropdown">
+            <li><a href="./about.html">About Us</a></li>
+            <li><a href="./shop-details.html">Shop Details</a></li>
+            <li><a href="./shopping-cart.html">Shopping Cart</a></li>
+            <li><a href="./checkout.html">Check Out</a></li>
+            <li><a href="./blog-details.html">Blog Details</a></li>
+        </ul>
+    </li>
+    <li><a href="./contact.html">Contacts</a></li>
+</ul>
+{% endblock %}
+
 {% block content %}
 
     <!-- Breadcrumb Section Begin -->
@@ -30,7 +48,7 @@
                     <div class="shop__sidebar">
                         <div class="shop__sidebar__search">
                             <form action="#">
-                                <input type="text" placeholder="Search...">
+                                <input type="text" name="q" placeholder="Search...">
                                 <button type="submit"><span class="icon_search"></span></button>
                             </form>
                         </div>
@@ -189,7 +207,7 @@
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6">
                                 <div class="shop__product__option__left">
-                                    <p>Showing 1–12 of 126 results</p>
+                                    <p>Showing 1–19 of {{product_count}} results</p>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6">
@@ -211,7 +229,7 @@
                                 <div class="product__item__pic set-bg" data-setbg="{{product.image.url}}">
                                     <ul class="product__hover">
                                         <li><a href="#"><img src="{% static 'joejee/img/icon/heart.png' %}" alt=""><span> wishlist</span></a></li>
-                                        <li><a href="#"><img src="{% static 'joejee/img/icon/cart.png' %}" alt=""> <span>Add to cart</span></a>
+                                        {% comment %} <li><a href="{% url 'add_cart' product.id %}"><img src="{% static 'joejee/img/icon/cart.png' %}" alt=""> <span>Add to cart</span></a> {% endcomment %}
                                     </ul>
                                 </div>
                                 <div class="product__item__text">
@@ -240,17 +258,48 @@
                             </div>
                         </div>
                         {% endfor %}
-                    </div>
-                    <div class="row">
+                    </div> 
+                    {% if products.has_other_pages %}
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center">
+                                {% if products.has_previous %}
+                                    <li class="page-item"><a class="page-link" href="?page={{products.previous_page_number}}" tabindex="-1">Previous</a></li>
+                                {% else %}
+                                    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">Previous</a></li>
+                                {% endif %}
+                                {% for i in products.paginator.page_range %}
+                                    {% if products.number == i %}
+                                        <li class="page-item active"><a class="page-link" href="#">{{i}}</a></li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+                                    {% endif %}
+                               {% endfor %}
+                               {% if products.has_next %}
+                                    <li class="page-item"><a class="page-link" href="?page={{products.next_page_number}}">Next</a></li>
+                                {% else %}
+                                    <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                    
+                       
+
+{% comment %}                          
                         <div class="col-lg-12">
+                            {% if products.has_other_pages %}
                             <div class="product__pagination">
-                                <a class="active" href="#">1</a>
-                                <a href="#">2</a>
-                                <a href="#">3</a>
-                                <span>...</span>
-                                <a href="#">21</a>
+                                
+                                {% for i in products.paginator.page_range %}
+                                    {% if products.number == i %}
+                                        <a class="active" href="?page={{i}}">{{i}}</a>
+                                    {% else %}
+                                        <a href="#">{{i}}</a>
+                                    {% endif %}
+                               {% endfor %}
                             </div>
-                        </div>
+                            {% endif %}
+                        </div> {% endcomment %}
                     </div>
                 </div>
             </div>

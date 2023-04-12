@@ -2,8 +2,8 @@ from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from joejee.models import Account
-from .models import category,Product,Images
-from .forms import AccountForm,ProductForm,CategoryForm,ImagesForm
+from .models import category,Product,Images,Variation
+from .forms import AccountForm,ProductForm,CategoryForm,ImagesForm,VariationForm
 
 # Create your views here.
 from django.shortcuts import render
@@ -14,7 +14,7 @@ def Admin_home(request):
 # ============================================================================================
 # ====================================== CUSTOMER PANEL ======================================
 def Admin_customer(request):
-    users = Account.objects.all()
+    users = Account.objects.filter(is_superadmin=False)
     context = {
         'users': users,
     }
@@ -142,4 +142,49 @@ def add_product(request):
     }
     return render(request, 'products/add_product.html',context)
 
+# =================================================================================================
+# =================================================================================================
+
+# =============================================================================================
+# ====================================== VARIATIONS ============================================
+def Admin_variation(request):
+    vari = Variation.objects.all()
+    context = {
+        'variation': vari,
+    }
+    return render(request,'products/variation.html',context)
+
+def delete_variation(request,id):
+    if request.method == 'POST':
+        pi = Variation.objects.get(pk=id)
+        pi.delete()
+        return HttpResponseRedirect('/admin/variations')
+    
+
+def update_variation(request,id):
+    if request.method == 'POST':
+        pi = Variation.objects.get(pk=id)
+        fm = VariationForm(request.POST, instance=pi)
+        if fm.is_valid:
+            fm.save()
+        return HttpResponseRedirect('/admin/variations')
+    else:
+        pi = Variation.objects.get(pk=id)
+        fm = VariationForm( instance=pi)
+    return render(request, 'products/update_variation.html',{'form':fm})
+
+def add_variation(request):
+    if request.method == 'POST' :
+        form = VariationForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.save()
+            return HttpResponseRedirect('/admin/variations')
+            form = VariationForm()
+    else:
+        form = VariationForm()
+    return render(request, 'products/add_variation.html',{'form':form})
+
+# ====================================== VARIATIONS ============================================
+# =============================================================================================
 

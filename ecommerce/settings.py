@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'joejee',
     'products',
+    'carts',
     'crispy_forms',
     'crispy_bootstrap5',
 ]
@@ -69,7 +70,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'products.context_processors.menu_links'
+                'products.context_processors.menu_links',
+                'carts.context_processors.counter',
             ],
         },
     },

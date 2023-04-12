@@ -21,5 +21,6 @@ from django.conf import settings
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('', include('joejee.urls')),
+    path('cart/',include('carts.urls')),
     path('admin/', include('products.urls')),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT) 

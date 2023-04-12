@@ -48,8 +48,6 @@
         <div class="offcanvas__nav__option">
             <a href="#" class="search-switch"><img src="{% static 'joejee/img/icon/search.png' %}" alt=""></a>
             <a href="#"><img src="{% static 'joejee/img/icon/heart.png' %}" alt=""></a>
-            <a href="#"><img src="{% static 'joejee/img/icon/cart.png' %}" alt=""> <span>0</span></a>
-            <div class="price">$0.00</div>
         </div>
         <div id="mobile-menu-wrap"></div>
         <div class="offcanvas__text">
@@ -80,7 +78,7 @@
                 </div>
                 <div class="col-lg-6 col-md-6">
                     <nav class="header__menu mobile-menu">
-                        <ul>
+                        {% comment %} <ul>
                             <li class="active"><a href="{% url 'joejee:Home' %}">Home</a></li>
                             <li><a href="{% url 'joejee:Shop' %}">Shop</a></li>
                             <li><a href="#">Pages</a>
@@ -93,7 +91,10 @@
                                 </ul>
                             </li>
                             <li><a href="./contact.html">Contacts</a></li>
-                        </ul>
+                        </ul> {% endcomment %}
+                        {% block nav %}
+                        
+                        {% endblock %}
                     </nav>
                 </div>
                 <div class="col-lg-3 col-md-3">
@@ -111,7 +112,7 @@
                             <a href="{% url 'joejee:user_signin' %}"><img src="{% static 'joejee/img/icon/user.png' %}" alt=""></a>
                         {% endif %}
                         <a href="#"><img src="{% static 'joejee/img/icon/heart.png' %}" alt=""></a>
-                        <a href="#"><img src="{% static 'joejee/img/icon/cart.png' %}" alt=""> <span>0</span></a>
+                        <a href="{% url 'cart' %}"><img src="{% static 'joejee/img/icon/cart.png' %}" alt=""><span class="badge badge-primary">{{cart_count}}</span></a>
                     </div>
                 </div>
             </div>

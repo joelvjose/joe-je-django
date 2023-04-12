@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product,category,Images
+from .models import Product,category,Images,Variation
 from joejee.models import Account
 
 class AccountForm(forms.ModelForm):
@@ -31,3 +31,9 @@ class ImagesForm(forms.ModelForm):
     class Meta:
         model = Images
         fields = ["images"]
+        
+class VariationForm(forms.ModelForm):
+    
+    class Meta:
+       model =  Variation
+       fields = ["product","variation_category","variation_value","price","stock","is_active"]

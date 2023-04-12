@@ -3,11 +3,16 @@ from django.shortcuts import render,get_object_or_404,redirect
 from django.contrib import messages,auth
 from django.contrib.auth.decorators import login_required
 from products.models import Product,category,Images
+from carts.models import CartItems
+from carts.views import _cart_id
 from .models import Account
 from products import verify 
 
 from .forms import CustomUserForm
 from products.forms import VerifyForm,ImagesForm
+
+from django.core.paginator import EmptyPage,PageNotAnInteger,Paginator
+from django.db.models import Q
 
 # Create your views here.
 def home(request):
@@ -21,17 +26,31 @@ def home(request):
 def shop(request, category_slug=None):
     categories = None
     prod = None
-    
-    if category_slug is not None:
-        categories = get_object_or_404(category,slug=category_slug)
-        prod = Product.objects.filter(category= categories, is_available=True)
-        prod_count = prod.count()
-    else:
-        prod = Product.objects.all().filter(is_available = True)
+    if 'q' in request.GET:
+        q = request.GET['q']
+        multiple_q = Q(Q(product_name__icontains = q)|Q(category__cat_name__icontains = q))
+        prod = Product.objects.filter(multiple_q)
+        paginator = Paginator(prod,9)
+        page = request.GET.get('page')
+        paged_prod = paginator.get_page(page)
         prod_count =prod.count()
+    else:
+        if category_slug is not None:
+            categories = get_object_or_404(category,slug=category_slug)
+            prod = Product.objects.filter(category= categories, is_available=True)
+            paginator = Paginator(prod,9)
+            page = request.GET.get('page')
+            paged_prod = paginator.get_page(page)
+            prod_count = prod.count()
+        else:
+            prod = Product.objects.all().filter(is_available = True).order_by('id')
+            paginator = Paginator(prod,9)
+            page = request.GET.get('page')
+            paged_prod = paginator.get_page(page)
+            prod_count =prod.count()
     
     context = {
-        'products':prod,
+        'products':paged_prod,
         'product_count':prod_count
     }
     return render(request,'joejee/shop.html',context)
@@ -43,12 +62,14 @@ def product_detail(request,category_slug=None,product_slug=None):
         single_product = Product.objects.get(category__slug=category_slug, slug=product_slug)
         # images =ImagesFormSet(request.POST or None, request.FILES or None, instance= single_product)
         images = Images.objects.filter(product = single_product.id)
+        in_cart = CartItems.objects.filter(cart__cart_id=_cart_id(request),product = single_product).exists() 
     except Exception as e:
         raise e
     
     context ={
         'single_product':single_product,
-        'images':images
+        'images':images,
+        'in_cart':in_cart
     }
     
     return render(request,'joejee/shop-details.html',context)

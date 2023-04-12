@@ -21,6 +21,11 @@ urlpatterns = [
     path('products/delete/<int:id>/',views.delete_product, name='delete_product'),
     path('products/add/',views.add_product, name='add_product'),
     
+    path('variations', views.Admin_variation, name="variation_list"),
+    path('variations/<int:id>/',views.update_variation, name='update_variation'),
+    path('variations/delete/<int:id>/',views.delete_variation, name='delete_variation'),
+    path('variations/add/',views.add_variation, name='add_variation'),
+    
     # path('order', views.Admin_home, name="Admin_Home"),
     # path('banner', views.Admin_home, name="Admin_Home"),
     # path('coupon', views.Admin_home, name="Admin_Home"),
