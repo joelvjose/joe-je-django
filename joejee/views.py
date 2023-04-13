@@ -1,4 +1,5 @@
 from django.forms import inlineformset_factory
+from django.http import HttpResponse
 from django.shortcuts import render,get_object_or_404,redirect
 from django.contrib import messages,auth
 from django.contrib.auth.decorators import login_required
@@ -13,6 +14,13 @@ from products.forms import VerifyForm,ImagesForm
 
 from django.core.paginator import EmptyPage,PageNotAnInteger,Paginator
 from django.db.models import Q
+
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import EmailMessage
 
 # Create your views here.
 def home(request):
@@ -127,3 +135,64 @@ def verify_code(request):
 def logout(request):
     auth.logout(request)
     return redirect('/')
+
+# =============================// DASHBOARD \\=============================
+def dashboard(request):
+    return render(request,'joejee/dashboard.html')
+
+def forgotPassword(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        if Account.objects.filter(email=email).exists():
+            user = Account.objects.get(email__exact=email)
+            current_site =get_current_site(request)
+            mail_subject = 'Joe&Jee : Reset your password'
+            message = render_to_string( 'joejee/reset_account_password.html', {
+                'user': user,
+                'domain' : current_site,
+                'uid' : urlsafe_base64_encode(force_bytes(user.pk)),
+                'token' : default_token_generator.make_token(user),
+                })
+            to_email = email
+            send_email = EmailMessage(mail_subject,message,to=[to_email])
+            send_email.send()
+            messages.success(request, 'Password reset email has been sent to your email address')
+            return redirect('/signin/')
+        else:
+            messages.error(request, 'Account does not exists.! Please Sign in to continue..!')
+            return redirect('/signup/')
+    return render(request,'products/forgotPassword.html')
+
+def resetpassword_validate(request,uidb64,token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = Account._default_manager.get(pk=uid)
+    except(TypeError, ValueError,OverflowError, Account.DoesNotExist):
+        user = None
+    
+    if user  is not None and default_token_generator.check_token(user, token):
+        request.session['uid']= uid
+        messages.success(request,'Please reset your password.!')
+        return redirect('joejee:resetpassword')
+    else:
+        messages.error(request, 'Sorry, the activation link has expired.!')
+        return redirect('/signin/')
+    
+def resetpassword(request):
+    if request.method == 'POST':
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+        
+        if password == confirm_password:
+            uid = request.session.get('uid')
+            user = Account.objects.get(pk=uid)
+            user.set_password(password)
+            user.save()
+            messages.success(request,'Password updated sucessfully..!')
+            return redirect('/signin/')
+        else:
+            messages.error(request, 'Password does not match..!')
+            return redirect('joejee:resetpassword')
+    else:
+        return render(request, 'products/reset-password.html' )
+    
