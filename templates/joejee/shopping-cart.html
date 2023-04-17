@@ -13,8 +13,8 @@
                     <div class="breadcrumb__text">
                         <h4>Shopping Cart</h4>
                         <div class="breadcrumb__links">
-                            <a href="./index.html">Home</a>
-                            <a href="./shop.html">Shop</a>
+                            <a href="{% url 'joejee:Home' %}">Home</a>
+                            <a href="{% url 'joejee:Shop' %}">Shop</a>
                             <span>Shopping Cart</span>
                         </div>
                     </div>
@@ -112,11 +112,12 @@
                         <ul>
                             <li>Total <span>₹ {{total}}</span></li>
                             <li>Tax(4%) <span>₹ {{tax}}</span></li>
+                            <li>Shipping Charge <span>₹ 0</span></li>
                             <hr>
                             <li>Grand Total <span>₹ {{grand_total}}</span></li>
                             <hr>
                         </ul>
-                            <a href="#" class="primary-btn">Proceed to checkout</a>
+                            <a href="{% url 'checkout' %}" class="primary-btn">Proceed to checkout</a>
                     </div>
                 </div>
                 {% endif %}

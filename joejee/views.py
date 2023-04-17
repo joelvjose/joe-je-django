@@ -4,7 +4,7 @@ from django.shortcuts import render,get_object_or_404,redirect
 from django.contrib import messages,auth
 from django.contrib.auth.decorators import login_required
 from products.models import Product,category,Images
-from carts.models import CartItems
+from carts.models import CartItems,Cart
 from carts.views import _cart_id
 from .models import Account
 from products import verify 
@@ -21,6 +21,8 @@ from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
+
+from carts.views import _cart_id
 
 # Create your views here.
 def home(request):
@@ -68,6 +70,7 @@ def shop(request, category_slug=None):
 def product_detail(request,category_slug=None,product_slug=None):
     try:
         single_product = Product.objects.get(category__slug=category_slug, slug=product_slug)
+        original_price = int(single_product.price*1.2)
         # images =ImagesFormSet(request.POST or None, request.FILES or None, instance= single_product)
         images = Images.objects.filter(product = single_product.id)
         in_cart = CartItems.objects.filter(cart__cart_id=_cart_id(request),product = single_product).exists() 
@@ -76,6 +79,7 @@ def product_detail(request,category_slug=None,product_slug=None):
     
     context ={
         'single_product':single_product,
+        'original_price': original_price,
         'images':images,
         'in_cart':in_cart
     }
@@ -89,7 +93,42 @@ def login(request):
         email = request.POST['email']
         password = request.POST['password']
         user = auth.authenticate(email=email,password=password)
+        
         if user is not None:
+            try:
+                cart = Cart.objects.get(cart_id= _cart_id(request))
+                is_cart_item_exist = CartItems.objects.filter(cart = cart).exists()
+                if is_cart_item_exist:
+                    cart_item = CartItems.objects.filter(cart=cart)
+                    product_variation =[]
+                    for item in cart_item:
+                        variation = item.variation.all()
+                        product_variation.append(list(variation))
+                        
+                    cart_item = CartItems.objects.filter(user= user)
+                    ex_var_list=[]
+                    id=[]
+                    for item in cart_item:
+                        existing_variation = item.variation.all()
+                        ex_var_list.append(list(existing_variation))
+                        id.append(item.id)
+                        
+                    for pv in product_variation:
+                        if pv in ex_var_list:
+                            index = ex_var_list.index(pv)
+                            item_id = id[index]
+                            item = CartItems.objects.get(id=item_id)
+                            item.quantity +=1
+                            item.user = user
+                            item.save()
+                        else:
+                            cart_item = CartItems.objects.filter(cart= cart)
+                            for item in cart_item:
+                                item.user = user
+                                item.save()
+                
+            except:
+                pass
             auth.login(request,user)
             messages.success(request,'You have been sucessfully logged in.!')
             return redirect('/')

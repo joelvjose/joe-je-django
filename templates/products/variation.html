@@ -52,7 +52,7 @@
                     <td>
                         <a href = "{% url 'products:update_variation' var.id %}" class ="btn btn-warning btn-sm">Edit</a>
                         <form action="{% url 'products:delete_variation' var.id %}" method="post" class="d-inline">{% csrf_token %}
-                            <input type="submit" class="btn btn-danger" value="Delete">
+                            <input type="submit" class="btn btn-danger btn-sm mx-2" value="Delete">
                         </form>
                     </td>
                   </tr>

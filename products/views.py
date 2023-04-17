@@ -4,6 +4,7 @@ from django.shortcuts import render
 from joejee.models import Account
 from .models import category,Product,Images,Variation
 from .forms import AccountForm,ProductForm,CategoryForm,ImagesForm,VariationForm
+from django.db.models import Q
 
 # Create your views here.
 from django.shortcuts import render
@@ -14,7 +15,12 @@ def Admin_home(request):
 # ============================================================================================
 # ====================================== CUSTOMER PANEL ======================================
 def Admin_customer(request):
-    users = Account.objects.filter(is_superadmin=False)
+    if 'q' in request.GET:
+        q = request.GET['q']
+        multiple_q = Q(Q(first_name__icontains = q)|Q(email__icontains = q)|Q(phone_number__icontains = q))
+        users = Account.objects.filter(multiple_q,is_superadmin=False).order_by('id').reverse()
+    else:
+        users = Account.objects.filter(is_superadmin=False).order_by('id').reverse()
     context = {
         'users': users,
     }
@@ -47,7 +53,12 @@ def block_customer(request,id):
 # =============================================================================================
 # ====================================== CATEGORY ============================================
 def Admin_category(request):
-    cat = category.objects.all()
+    if 'q' in request.GET:
+        q = request.GET['q']
+        multiple_q = Q(Q(cat_name__icontains = q))
+        cat = category.objects.filter(multiple_q)
+    else:
+        cat = category.objects.all()
     context = {
         'category': cat,
     }
@@ -91,7 +102,12 @@ def add_category(request):
 # ====================================== PRODUCTS ============================================
 
 def Admin_product(request):
-    Products = Product.objects.all()
+    if 'q' in request.GET:
+        q = request.GET['q']
+        multiple_q = Q(Q(product_name__icontains = q)|Q(category__cat_name__icontains = q))
+        Products = Product.objects.filter(multiple_q).order_by('id').reverse()
+    else:
+        Products = Product.objects.all().order_by('id').reverse()
     context = {
         'Products': Products,
     }

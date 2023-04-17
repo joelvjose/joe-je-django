@@ -41,9 +41,9 @@
                     <th scope="row">{{cat.cat_name}}</th>
                     <td>{{cat.slug}}</td>
                     <td>
-                        <a href = "{% url 'products:update_category' cat.id %}" class ="btn btn-warning btn-sm">Edit</a>
+                        <a href = "{% url 'products:update_category' cat.id %}" class ="btn btn-warning btn-sm m-2">Edit</a>
                         <form action="{% url 'products:delete_category' cat.id %}" method="post" class="d-inline">{% csrf_token %}
-                            <input type="submit" class="btn btn-danger" value="Delete">
+                            <input type="submit" class="btn btn-danger btn-sm" value="Delete">
                         </form>
                     </td>
                   </tr>

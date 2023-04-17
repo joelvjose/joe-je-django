@@ -54,9 +54,9 @@
                     <td>{{product.category}}</td>
                     
                     <td>
-                        <a href = "{% url 'products:update_product' product.id %}" class ="btn btn-warning btn-sm">Edit</a>
+                        <a href = "{% url 'products:update_product' product.id %}" class ="btn btn-warning btn-sm my-2 ">Edit</a>
                         <form action="{% url 'products:delete_product' product.id %}" method="post" class="d-inline">{% csrf_token %}
-                            <input type="submit" class="btn btn-danger" value="Delete">
+                            <input type="submit" class="btn btn-danger btn-sm" value="Delete">
                         </form>
                     </td>
                   </tr>
