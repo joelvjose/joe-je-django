@@ -144,7 +144,7 @@ def remove_cart(request, product_id, cart_item_id):
     product = get_object_or_404(Product, id=product_id)
     try:
         if request.user.is_authenticated:
-            CartItem = CartItems.objects.get(product=product, user=request.user)
+            CartItem = CartItems.objects.get(product=product, user=request.user,id=cart_item_id)
         else:
             cart = Cart.objects.get(cart_id = _cart_id(request))
             CartItem = CartItems.objects.get(product=product, cart= cart, id=cart_item_id)
@@ -162,7 +162,7 @@ def delete_cart(request, product_id,cart_item_id):
     product = get_object_or_404(Product, id=product_id)
     try:
         if request.user.is_authenticated:
-            CartItem = CartItems.objects.get(product=product, user=request.user)
+            CartItem = CartItems.objects.get(product=product, user=request.user,id=cart_item_id)
         else:
             cart = Cart.objects.get(cart_id = _cart_id(request))
             CartItem = CartItems.objects.get(product=product, cart= cart, id=cart_item_id)

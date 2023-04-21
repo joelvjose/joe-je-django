@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'joejee',
     'products',
     'carts',
+    'orders',
     'crispy_forms',
     'crispy_bootstrap5',
 ]
