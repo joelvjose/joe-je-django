@@ -32,6 +32,7 @@
      <!-- Include the PayPal JavaScript SDK -->
      {% comment %} <script src="https://www.paypal.com/sdk/js?client-id=AVHJDr8oU8V0-zdAUWhHnPktvXH5cCnK95xcp63IiwP0VryaQ2wVv7C9bmWBKxOIiSpXbeth8nGBzHZP&currency=USD"></script> {% endcomment %}
      
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" ></script>
      <script src="https://www.paypal.com/sdk/js?client-id=Aeu1CkXXqSeN-GIY823WkANi4hwQcXyS89um9vTVoxPiSPf_UVcmi-bsueSaXsxjQl-py4tjunTHBzWr&currency=USD"></script>
 </head>
 
@@ -82,20 +83,7 @@
                 </div>
                 <div class="col-lg-6 col-md-6">
                     <nav class="header__menu mobile-menu">
-                        {% comment %} <ul>
-                            <li class="active"><a href="{% url 'joejee:Home' %}">Home</a></li>
-                            <li><a href="{% url 'joejee:Shop' %}">Shop</a></li>
-                            <li><a href="#">Pages</a>
-                                <ul class="dropdown">
-                                    <li><a href="./about.html">About Us</a></li>
-                                    <li><a href="./shop-details.html">Shop Details</a></li>
-                                    <li><a href="./shopping-cart.html">Shopping Cart</a></li>
-                                    <li><a href="./checkout.html">Check Out</a></li>
-                                    <li><a href="./blog-details.html">Blog Details</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="./contact.html">Contacts</a></li>
-                        </ul> {% endcomment %}
+                        
                         {% block nav %}
                         
                         {% endblock %}
@@ -105,10 +93,10 @@
                     <div class="header__nav__option">
                         {% if user.is_authenticated %}
                             <div class="header__top__hover">
-                                <span style="font-weight: 700;color: black!important;" class="px-3">Welcome, {{user.first_name}} </span>
+                                <span style="font-weight: 700;color: black!important;" class="px-3">Welcome,{{user.first_name}} </span>
                                 <ul class="nav-dropdown">
                                     <li><a class="dropdown-item" href="{% url 'joejee:dashboard' %}">Account Details</a></li>
-                                    <li><a class="dropdown-item" href="#">Addresses </a></li>
+                                    <li><a class="dropdown-item" href="{% url 'joejee:my_addresses' %}">Addresses </a></li>
                                     <li><a class="dropdown-item" href="{% url 'joejee:user_logout' %}">Logout </a></li>
                                 </ul>
                             </div>
@@ -210,6 +198,7 @@
 
     <!-- Js Plugins -->
     <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    
     <script>
         alertify.set('notifier','position', 'top-right');
         {% for msg in messages %}
@@ -226,6 +215,9 @@
     <script src="{% static 'joejee/js/mixitup.min.js' %}"></script>
     <script src="{% static 'joejee/js/owl.carousel.min.js' %}"></script>
     <script src="{% static 'joejee/js/main.js' %}"></script>
+    {% block script %}
+
+    {% endblock %}
    
 </body>
 

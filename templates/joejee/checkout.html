@@ -25,54 +25,87 @@
     <!-- Checkout Section Begin -->
     <section class="checkout spad">
         <div class="container">
-            <div class="checkout__form">
-                <form action="{% url 'orders:place_order' %}" method ="POST">
-                    {% csrf_token %}
+            <div class="checkout__form">    
                     <div class="row">
                         <div class="col-lg-8 col-md-6">
-                            <h6 class="coupon__code"><span class="icon_tag_alt"></span> Have a coupon? <a href="#">Click
-                            here</a> to enter your code</h6>
+                            <h6 class="checkout__title">Saved Address</h6>
+                            <div class="card-body">
+                                <div class="row"> 
+                                    {% if addresses %}
+                                    {% for address in addresses %}
+                                    <div class="col-md-4"> 
+                                        <div class="card {% if address.status %}border-secondary shadow{% endif %} address{{address.id}} address"> 
+                                            <div class="card-body">
+                                                <strong>{{address.full_name}}</strong>
+                                                <p class="my-0 card-text">{{address.address_line_1}}</p>
+                                                <p class="my-0 card-text">{{address.address_line_2}}</p>
+                                                <p class="my-0 card-text">{{address.city}},{{address.state}}</p>
+                                                <p class="my-0 card-text">{{address.country}}, PIN :{{address.pincode}}</p>
+                                                <p class="my-0 card-text">{{address.email}}</p>
+                                                <p class="my-0 card-text">{{address.phone}}</p>
+                                            </div>
+                                            {% if address.status %}
+                                            <div class="card-footer">
+                                                <i class = "fa fa-check-circle text-success check{{address.id}} check"></i>
+                                                <button style="display:none;" data-address="{{address.id}}" class="btn btn-sm btn-info activate-address btn{{address.id}} actbtn" onclick="changeAdd( '{{address.first_name}}', '{{address.last_name}}', '{{address.address_line_1}}', '{{address.address_line_2}}', '{{address.city}}', '{{address.state}}', '{{address.country}}', '{{address.pincode}}', '{{address.phone}}', '{{address.email}}')">Make default</button>
+                                            </div>
+                                            {% else %}
+                                            <div class="card-footer footer{{address.id}}">
+                                                <i style="display:none;" class = "fa fa-check-circle text-success check{{address.id}} check"></i>
+                                                <button data-address="{{address.id}}" class="btn btn-sm btn-info activate-address btn{{address.id}} actbtn" onclick="changeAdd( '{{address.first_name}}', '{{address.last_name}}', '{{address.address_line_1}}', '{{address.address_line_2}}', '{{address.city}}', '{{address.state}}', '{{address.country}}', '{{address.pincode}}', '{{address.phone}}', '{{address.email}}')">Make default</button>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    {% else %}
+                                        <p>Your Address list is empty.!</p>
+                                    {% endif %} 
+                                </div>
+                            </div>
+                        <form action="{% url 'orders:place_order' %}" method ="POST">
+                            {% csrf_token %}
                             <h6 class="checkout__title">Billing Details</h6>
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
-                                        <p>Fist Name<span>*</span></p>
-                                        <input type="text" name="first_name">
+                                        <p>First Name<span>*</span></p>
+                                        <input type="text" name="first_name" id="first_name" value="{{cadd.first_name}}" >
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
                                         <p>Last Name<span>*</span></p>
-                                        <input type="text" name="last_name">
+                                        <input type="text" name="last_name" id="last_name" value="{{cadd.last_name}}" >
                                     </div>
                                 </div>
                             </div>
                             <div class="checkout__input">
                                 <p>Address<span>*</span></p>
-                                <input type="text" placeholder="Street Address" class="checkout__input__add" name="address_line_1">
-                                <input type="text" placeholder="Apartment, suite, unite ect (optinal)" name="address_line_2">
+                                <input type="text" placeholder="Street Address" class="checkout__input__add" name="address_line_1" id="adr-line-1" value="{{cadd.address_line_1}}" >
+                                <input type="text" placeholder="Apartment, suite, unite ect (optinal)" name="address_line_2" id="adr-line-2" value="{{cadd.address_line_2}}" >
                             </div>
                             <div class="checkout__input">
                                 <p>Town/City<span>*</span></p>
-                                <input type="text" name="city">
+                                <input type="text" name="city" id="city"  value="{{cadd.city}}" >
                             </div>
                             <div class="row">
                                 <div class="col-lg-4">
                                     <div class="checkout__input">
                                         <p>State<span>*</span></p>
-                                        <input type="text" name="state">
+                                        <input type="text" name="state" id="state"  value="{{cadd.state}}" >
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="checkout__input">
                                         <p>Country<span>*</span></p>
-                                        <input type="text" name="country">
+                                        <input type="text" name="country" id="country" value="{{cadd.country}}" >
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="checkout__input">
                                         <p>Postcode / ZIP<span>*</span></p>
-                                        <input type="text" name="pincode">
+                                        <input type="text" name="pincode" id="pincode" value="{{cadd.pincode}}" >
                                     </div>
                                 </div>
                             </div>
@@ -80,23 +113,17 @@
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
                                         <p>Phone<span>*</span></p>
-                                        <input type="text" name="phone">
+                                        <input type="text" name="phone" id="phone" value="{{cadd.phone}}" >
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
                                         <p>Email<span>*</span></p>
-                                        <input type="text" name="email">
+                                        <input type="text" name="email" id="email" value="{{cadd.email}}" >
                                     </div>
                                 </div>
                             </div>
-                            <div class="checkout__input__checkbox">
-                                <label for="diff-acc">
-                                    Note about your order, e.g, special note for delivery
-                                    <input type="checkbox" id="diff-acc" name="order_note">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </div>
+                            
                             <div class="checkout__input">
                                 <p>Order notes<span>*</span></p>
                                 <input type="text"
@@ -119,18 +146,16 @@
                                     <hr>
                                     <li>Grand Total <span>₹ {{grand_total}}</span></li>
                                 </ul>
-                                <div class="checkout__input__checkbox">
-                                    <label for="payment">
-                                        Check Payment
-                                        <input type="checkbox" id="payment">
-                                        <span class="checkmark"></span>
+                                <div class="form-check checkout__input__checkbox">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                                    <label class="form-check-label" for="flexRadioDefault1">
+                                      Cash on Delivery
                                     </label>
                                 </div>
-                                <div class="checkout__input__checkbox">
-                                    <label for="paypal">
-                                        Paypal
-                                        <input type="checkbox" id="paypal">
-                                        <span class="checkmark"></span>
+                                <div class="form-check checkout__input__checkbox">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                                    <label class="form-check-label" for="flexRadioDefault2">
+                                      PayPal
                                     </label>
                                 </div>
                                 <button type="submit" name="submit" class="site-btn">PLACE ORDER</button>
@@ -143,4 +168,58 @@
     </section>
     <!-- Checkout Section End -->
 {% endblock %}
-   
+
+{% block script %}
+<script>
+    function changeAdd(first, last, ad1, ad2, cty,state1,cntry,pcode,ph,email1) {
+        let first_name = document.getElementById("first_name");
+        let last_name = document.getElementById("last_name");
+        let add1 = document.getElementById("adr-line-1");
+        let add2 = document.getElementById("adr-line-2");
+        let state = document.getElementById("state");
+        let city = document.getElementById("city");
+        let country = document.getElementById("country");
+        let phone = document.getElementById("phone");
+        let email = document.getElementById("email");
+        let pincode = document.getElementById("pincode");
+        first_name.value = first;
+        last_name.value = last;
+        add1.value = ad1;
+        add2.value = ad2;
+        city.value = cty;
+        state.value = state1;
+        country.value = cntry;
+        phone.value = ph;
+        email.value = email1;
+        pincode.value = pcode;
+      }
+
+$(document).on('click','.activate-address',function(){
+    var to_url = "{% url 'joejee:activate-address' %}"
+    var _aId=$(this).attr('data-address');
+    var _vm=$(this);
+
+    $.ajax({
+        url:to_url,
+        data:{
+            'id':_aId,
+        },
+        dataType:'json',
+        success:function(res){
+            if(res.bool==true){
+
+                $(".address").removeClass('shadow border-secondary');
+                $(".address"+_aId).addClass('shadow border-secondary');
+                
+                $(".check").hide();
+                $(".actbtn").show();
+
+                $(".check"+_aId).show();
+                $(".btn"+_aId).hide();
+            }
+        }
+    });
+});
+</script>
+
+{% endblock %}

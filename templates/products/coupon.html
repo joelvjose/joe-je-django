@@ -1,0 +1,57 @@
+{% extends 'products/adminbase.html' %}
+{% load static %}
+
+
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-sm-12">
+            <nav class="navbar d-flex alert alert-info justify-content-between">
+              <h3 >Coupons</h3>
+              <form class="form-inline d-flex">
+                <input class="form-control mr-sm-2" name ="q" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+              </form>
+              <a href = "{% url 'products:add_coupon' %}" class ="btn btn-primary btn-sm">Add Coupon</a>
+            </nav>
+            {% if coupons %}
+            <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">Coupon Code</th>
+                    <th scope="col">Discount</th>
+                    <th scope="col">Minimum Amount</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                    <th scope="col">Active</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for coup in coupons %}
+                  <tr>
+                    <th scope="row">{{coup.code}}</th>
+                    <td>{{coup.discount}}</td>
+                    <td>{{coup.min_amount}}</td>
+                    <td>{{coup.active_date}}</td>
+                    <td>{{coup.expiry_date}}</td>
+                    <td>{{coup.active}}</td>
+
+                    <td>
+                        <a href = "{% url 'products:update_coupon' coup.id %}" class ="btn btn-warning btn-sm m-2">Edit</a>
+                        <form action="{% url 'products:delete_coupon' coup.id %}" method="post" class="d-inline">{% csrf_token %}
+                            <input type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to Delete this Coupon?')" value="Delete">
+                        </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            {% else %}
+                <h3 class="text-center alert alert-warning ">No Records Found</h3>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

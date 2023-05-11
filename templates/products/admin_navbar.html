@@ -1,0 +1,10 @@
+<div class="navbar-nav w-100">
+    <a href="{% url 'products:Admin_Home' %}" class="nav-item nav-link {% if '/admin/' == request.path %}active{% endif %}"><i class="fa fa-home me-2"></i>Dashboard</a>
+    <a href="{% url 'products:customer_list' %}" class="nav-item nav-link {% if '/customer' in request.path %}active{% endif %}"><i class="fa fa-user me-2"></i>Customer</a>
+    <a href="{% url 'products:category_list' %}" class="nav-item nav-link {% if '/Category' in request.path %}active{% endif %}"><i class="fa fa-file-alt me-2"></i>Categories</a>
+    <a href="{% url 'products:product_list' %}" class="nav-item nav-link {% if '/products' in request.path %}active{% endif %}"><i class="fa fa-th me-2"></i>Products</a>
+    <a href="{% url 'products:variation_list' %}" class="nav-item nav-link {% if '/variations' in request.path %}active{% endif %}"><i class="fa fa-clone me-2"></i>Variations</a>
+    <a href="{% url 'products:orders_list' %}" class="nav-item nav-link {% if '/orders' in request.path %}active{% endif %}"><i class="fa fa-truck me-2"></i>Orders</a>
+    {% comment %} <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Banner</a> {% endcomment %}
+    <a href="{% url 'products:coupons_list' %}" class="nav-item nav-link"><i class="fa fa-gift me-2"></i>Coupons</a>
+</div>

@@ -1,15 +1,16 @@
 from django.forms import inlineformset_factory
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render,get_object_or_404,redirect
 from django.contrib import messages,auth
 from django.contrib.auth.decorators import login_required
 from products.models import Product,category,Images
 from carts.models import CartItems,Cart
 from carts.views import _cart_id
-from .models import Account
-from products import verify 
+from .models import Account,AddressBook
+from products import verify
+from orders.models import Order,OrderProduct
 
-from .forms import CustomUserForm
+from .forms import CustomUserForm,AddressBookForm
 from products.forms import VerifyForm,ImagesForm
 
 from django.core.paginator import EmptyPage,PageNotAnInteger,Paginator
@@ -29,8 +30,16 @@ def home(request):
     if request.user.is_authenticated:
         if request.user.is_superadmin:
             return redirect('products:Admin_Home')
-    return render(request,'joejee/index.html')
+    products=Product.objects.all().order_by('-id')[:8]
+    first_product=Product.objects.latest('id')
+    context ={
+        'products':products,
+        'first_product':first_product,
+    }
+    return render(request,'joejee/index.html',context)
 
+def contact(request):
+    return render(request,'joejee/contact.html')
 
     
 def shop(request, category_slug=None):
@@ -39,7 +48,15 @@ def shop(request, category_slug=None):
     if 'q' in request.GET:
         q = request.GET['q']
         multiple_q = Q(Q(product_name__icontains = q)|Q(category__cat_name__icontains = q))
-        prod = Product.objects.filter(multiple_q)
+        prod = Product.objects.filter(multiple_q).order_by('-id')
+        paginator = Paginator(prod,9)
+        page = request.GET.get('page')
+        paged_prod = paginator.get_page(page)
+        prod_count =prod.count()
+    elif 'p' in request.GET:
+        p = int(request.GET['p'])
+        # multiple_q = Q(Q(product_name__icontains = q)|Q(category__cat_name__icontains = q))
+        prod = Product.objects.filter(price__range=(0, p)).order_by('-id')
         paginator = Paginator(prod,9)
         page = request.GET.get('page')
         paged_prod = paginator.get_page(page)
@@ -47,13 +64,13 @@ def shop(request, category_slug=None):
     else:
         if category_slug is not None:
             categories = get_object_or_404(category,slug=category_slug)
-            prod = Product.objects.filter(category= categories, is_available=True)
+            prod = Product.objects.filter(category= categories, is_available=True).order_by('-id')
             paginator = Paginator(prod,9)
             page = request.GET.get('page')
             paged_prod = paginator.get_page(page)
             prod_count = prod.count()
         else:
-            prod = Product.objects.all().filter(is_available = True).order_by('id')
+            prod = Product.objects.all().filter(is_available = True).order_by('-id')
             paginator = Paginator(prod,9)
             page = request.GET.get('page')
             paged_prod = paginator.get_page(page)
@@ -65,6 +82,16 @@ def shop(request, category_slug=None):
     }
     return render(request,'joejee/shop.html',context)
 
+def search_products(request):
+    # a_id = request.GET['id']
+    # AddressBook.objects.update(status= False)
+    # AddressBook.objects.filter(id=a_id).update(status=True)
+    products= Product.objects.all()
+    product_list=[]
+    for product in products:
+        product_list.append(product.product_name)
+   
+    return JsonResponse({'product_names':product_list})
 
 # ImagesFormSet = ProductImageFormSet = inlineformset_factory(Product,Images, form = ImagesForm,extra = 4)
 def product_detail(request,category_slug=None,product_slug=None):
@@ -146,13 +173,18 @@ def register(request):
             last_name = form.cleaned_data['last_name']
             email = form.cleaned_data['email'] 
             phone_number = form.cleaned_data['phone_number']
+            phone_number='+91' + phone_number
             password1 = form.cleaned_data['password1']
             user = Account.objects.create_user(first_name=first_name,last_name=last_name,phone_number=phone_number,email=email,password=password1)
             user.save()
             request.session['email']=email
-            verify.send(phone_number)
-            messages.success(request,"Registered Sucessfully! Verify OTP to Continue")
-            return redirect('/verify/')
+            try:
+                verify.send(phone_number)
+                messages.success(request,"Registered Sucessfully! Verify OTP to Continue")
+                return redirect('/verify/')
+            except:
+                messages.error(request,"Invalid Mobile number")
+            
     context = {'form':form}
     return render(request,'products/signup.html',context)
 
@@ -176,9 +208,106 @@ def logout(request):
     return redirect('/')
 
 # =============================// DASHBOARD \\=============================
+@login_required(login_url='joejee:user_signin')
 def dashboard(request):
-    return render(request,'joejee/dashboard.html')
+    orders = Order.objects.order_by('-created_at').filter(user_id=request.user.id, is_ordered = True)
+    order_count = orders.count()
+    context ={
+        'order_count':order_count,
+    }
+    return render(request,'joejee/dashboard.html',context)
 
+@login_required(login_url='joejee:user_signin')
+def my_orders(request):
+    orders = Order.objects.filter(user= request.user, is_ordered= True).order_by('-created_at')
+    context ={
+        'orders':orders
+    }
+    return render(request,'joejee/my_orders.html',context)
+
+def cancel_order(request,order_id):
+    order = Order.objects.get(order_number=order_id)
+    order.status='Cancelled'
+    order.save()
+    return redirect('joejee:my_orders')
+    
+
+@login_required(login_url='joejee:user_signin')
+def orders_details(request,order_id):
+    order_detail = OrderProduct.objects.filter(order__order_number=order_id)
+    order = Order.objects.get(order_number=order_id)
+    subtotal=0
+    for i in order_detail:
+        subtotal += i.product_price*i.quantity
+    
+    context = {
+        'order_detail':order_detail,
+        'order':order,
+        'subtotal':subtotal,
+    }
+    return render(request,'joejee/order_detail.html',context)
+
+
+@login_required(login_url='joejee:user_signin')
+def change_password(request):
+    if request.method=="POST":
+        current_password=request.POST['current_password']
+        new_password=request.POST['new_password']
+        confirm_password=request.POST['confirm_password']
+        
+        user = Account.objects.get(email__exact=request.user.email)
+        
+        if new_password == confirm_password:
+            success = user.check_password(current_password)
+            if success:
+                user.set_password(new_password)
+                user.save()
+                auth.logout(request)
+                return redirect('/')
+                messages.success(request,'Password updated.!')
+            else:
+                messages.success(request,'Enter correct password.!')
+                return redirect('joejee:change_password')
+        else:
+            messages.success(request,'Passwords doesnot match.!')
+            return redirect('joejee:change_password')
+    return render(request,'joejee/change_password.html')
+
+ 
+@login_required(login_url='joejee:user_signin')   
+def my_addresses(request):
+    addresses = AddressBook.objects.filter(user= request.user).order_by('-id')
+    context = {
+        'addresses':addresses
+    }
+    return render(request, 'joejee/my_addresses.html',context)
+    
+    
+def save_address(request):
+    form = AddressBookForm()
+    if request.method == "POST":
+        form = AddressBookForm(request.POST)
+        if form.is_valid():
+            saveform=form.save(commit=False)
+            saveform.user= request.user
+            saveform.save()
+            messages.success(request,"New Address added sucessfully.!")
+            return redirect('joejee:my_addresses')
+    context={
+        'form':form
+    }
+    return render(request, 'joejee/add-address.html',context)
+    
+def activate_address(request):
+    a_id = request.GET['id']
+    AddressBook.objects.update(status= False)
+    AddressBook.objects.filter(id=a_id).update(status=True)
+    context = {
+        'bool': True
+    }
+    return JsonResponse({'bool':True})
+    
+# ===========================================================================
 def forgotPassword(request):
     if request.method == 'POST':
         email = request.POST['email']

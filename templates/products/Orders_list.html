@@ -1,0 +1,65 @@
+{% extends 'products/adminbase.html' %}
+{% load static %}
+
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-sm-12">
+            <nav class="navbar d-flex alert alert-info justify-content-between">
+              <h3 >Orders</h3>
+              <form class="form-inline d-flex">
+                <input class="form-control mr-sm-2" name ="q" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+              </form>
+              {% comment %} <a href = "{% url 'products:add_variation' %}" class ="btn btn-primary btn-sm">Add Variation</a> {% endcomment %}
+            </nav>
+            {% if orders %}
+            <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">Order Number</th>
+                    <th scope="col">Ordered User</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Created At</th>
+                    <th scope="col">Status </th>
+                    <th scope="col">Action </th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for order in orders %}
+                  <tr>
+                    <th scope="row"><a href="{% url 'products:admin_orders_details' order.order_number %}">{{order.order_number}}</a></th>
+                    <td>{{order.user.full_name}}</td>
+                    <td>{{order.order_total}}</td>
+                    <td>{{order.created_at}}</td>
+                    <td>{{order.status}}</td>
+                    <td>
+                      {% if order.status == 'New' %}
+                        <a href = "{% url 'products:admin_orders_confirm' order.order_number %}" onclick="return confirm('Are you sure you want to Confirm this Order?')" class ="btn btn-danger btn-sm">Confirm</a>
+                      {% elif order.status == 'Confirmed' %}
+                        <a href = "{% url 'products:admin_orders_shipping' order.order_number %}" onclick="return confirm('Are you sure you want to Start Shipping this Order?')" class ="btn btn-warning btn-sm">Start Shipping</a>
+                      {% elif order.status == 'shipping' %}
+                        <a href = "{% url 'products:admin_orders_delievered' order.order_number %}" onclick="return confirm('Is order Delivered?')" class ="btn btn-success btn-sm">Delivered</a>
+                      {% else %}
+                        <button class ="btn btn-secondary btn-sm" disabled >Cancel</button>
+                      {% endif %}
+                      
+                        {% comment %} {% url 'products:update_variation' var.id %} {% endcomment %}
+                        {% comment %} <form action="{% url 'products:delete_variation' var.id %}" method="post" class="d-inline">{% csrf_token %}
+                            <input type="submit" class="btn btn-danger btn-sm mx-2" value="Delete">
+                        </form> {% endcomment %}
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% else %}
+                <h3 class="text-center alert alert-warning ">No Records Found</h3>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

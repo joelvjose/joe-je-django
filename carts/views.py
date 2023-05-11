@@ -1,9 +1,13 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from products.models import Product,Variation
+from products.models import Product,Variation,Coupon
 from .models import Cart,CartItems
+from joejee.models import AddressBook
+
+import json
+from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 
 # Create your views here.
 def cart(request, total=0, quantity= 0, cart_items=None):
@@ -171,6 +175,37 @@ def delete_cart(request, product_id,cart_item_id):
         pass
     return redirect('cart')
     
+# ==========================// COUPON  \\================================
+def add_coupon(request):
+    body = json.loads(request.body)
+    # cartitems=CartItems.objects.filter(user=request.user)
+    grand_total=int(body['grand_total'])
+    try:
+        coupon_given = Coupon.objects.get(code__iexact=body['coupon'])
+    except Coupon.DoesNotExist:
+         data ={
+             "total":grand_total,
+             "message":"Not a Valid Coupon"
+            }
+    else:
+        today = datetime.now().date()
+        s_date=coupon_given.active_date
+        e_date=coupon_given.expiry_date
+        min_amt=int(coupon_given.min_amount)
+        if(grand_total > min_amt and s_date <= today <= e_date):
+            grand_total-=int(coupon_given.discount)
+            request.session['total']=grand_total
+            data ={
+             "total":grand_total,
+             "message":coupon_given.code+" Applied"
+            }
+        else:
+            data = {
+                'total':grand_total,
+                'message':"Not a Valid Coupon"
+            }
+    return JsonResponse(data)
+
 # =========================// Checkout \\================================
 
 @login_required(login_url = 'joejee:user_signin')
@@ -190,7 +225,14 @@ def checkout(request):
             total += (item.product.price * item.quantity)
             quantity += item.quantity
         tax = int(total * 0.04)
-        grand_total = total + tax
+        grand_total = tax + total
+        
+        if(request.session.get('total')):
+            grand_total=request.session.get('total')
+        
+        addresses = AddressBook.objects.filter(user=request.user).order_by('-id')
+        cadd = AddressBook.objects.filter(user=request.user, status= True).first()
+        
     except:
         pass
     context ={
@@ -199,5 +241,7 @@ def checkout(request):
         'quantity': quantity,
         'cart_items': cart_items,
         'grand_total': grand_total, 
+        'addresses':addresses,
+        'cadd':cadd,
     }
     return render(request,'joejee/checkout.html',context)

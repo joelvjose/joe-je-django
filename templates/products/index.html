@@ -1,18 +1,7 @@
 {% extends 'products/adminbase.html' %}
 {% load static %}
 
-{% block nav %}
-<div class="navbar-nav w-100">
-    <a href="{% url 'products:Admin_Home' %}" class="nav-item nav-link active"><i class="fa fa-home me-2"></i>Dashboard</a>
-    <a href="{% url 'products:customer_list' %}" class="nav-item nav-link"><i class="fa fa-user me-2"></i>Customer</a>
-    <a href="{% url 'products:category_list' %}" class="nav-item nav-link"><i class="fa fa-file-alt me-2"></i>Categories</a>
-    <a href="{% url 'products:product_list' %}" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Products</a>
-    <a href="{% url 'products:variation_list' %}" class="nav-item nav-link"><i class="fa fa-clone me-2"></i>Variations</a>
-    <a href="form.html" class="nav-item nav-link"><i class="fa fa-truck me-2"></i>Orders</a>
-    <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Banner</a>
-    <a href="chart.html" class="nav-item nav-link"><i class="fa fa-gift me-2"></i>Coupons</a>
-</div>
-{% endblock %}
+
 
 {% block content %}
             <!-- Sale & Revenue Start -->
@@ -65,7 +54,7 @@
                     <div class="col-sm-12 col-xl-6">
                         <div class="bg-light text-center rounded p-4">
                             <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0">Worldwide Sales</h6>
+                                <h6 class="mb-0">Product Stock</h6>
                             </div>
                             <canvas id="worldwide-sales"></canvas>
                         </div>
@@ -73,7 +62,7 @@
                     <div class="col-sm-12 col-xl-6">
                         <div class="bg-light text-center rounded p-4">
                             <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0">Salse & Revenue</h6>
+                                <h6 class="mb-0">Sales & Revenue</h6>
                             </div>
                             <canvas id="salse-revenue"></canvas>
                         </div>
@@ -81,76 +70,67 @@
                 </div>
             </div>
             <!-- Sales Chart End -->
-
+            <div class="container-fluid pt-4 px-4">
+                
+            </div>
 
             <!-- Recent Sales Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="bg-light text-center rounded p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h6 class="mb-0">Recent Salse</h6>
-                        <a href="">Show All</a>
+                    <div class="d-flex align-items-center justify-content-between mb-0">
+                        <h5 class="mb-0">Recent Orders</h5>
+                        <a href="{% url 'products:orders_list' %}">Show All</a>
+                    </div>
+                    <div class="bg-light text-center rounded p-4">
+                        <div class="d-md-flex d-grid align-items-center justify-content-between mb-4">
+                            {% comment %} <form class="form-inline d-flex my-1 align-items-center justify-content-between" style="width:70%;"> {% endcomment %}
+                            <div>
+                                <h6 class="mb-0">From</h6>
+                                <input class="form-control" type="date" name="from" id="from">
+                            </div>
+                            <div>
+                                <h6 class="mb-0">To</h6>
+                                <input class="form-control" type="date" name="to" id="to">
+                            </div>
+                            <button class="btn btn-primary" onclick="applyfilter()">Go</button>
+                            {% comment %} </form> {% endcomment %}
+                        <div>
+                            <select class="float-right form-control" id="export-options" onchange="exportData()">
+                                <option value=" ">Choose option</option>
+                                <option value="excel">Export to Excel</option>
+                                <option value="pdf">Download PDF</option>
+                            </select>
+                        </div>
+                    </div>
                     </div>
                     <div class="table-responsive">
-                        <table class="table text-start align-middle table-bordered table-hover mb-0">
-                            <thead>
-                                <tr class="text-dark">
-                                    <th scope="col"><input class="form-check-input" type="checkbox"></th>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Invoice</th>
-                                    <th scope="col">Customer</th>
-                                    <th scope="col">Amount</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><input class="form-check-input" type="checkbox"></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td>$123</td>
-                                    <td>Paid</td>
-                                    <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                                </tr>
-                                <tr>
-                                    <td><input class="form-check-input" type="checkbox"></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td>$123</td>
-                                    <td>Paid</td>
-                                    <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                                </tr>
-                                <tr>
-                                    <td><input class="form-check-input" type="checkbox"></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td>$123</td>
-                                    <td>Paid</td>
-                                    <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                                </tr>
-                                <tr>
-                                    <td><input class="form-check-input" type="checkbox"></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td>$123</td>
-                                    <td>Paid</td>
-                                    <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                                </tr>
-                                <tr>
-                                    <td><input class="form-check-input" type="checkbox"></td>
-                                    <td>01 Jan 2045</td>
-                                    <td>INV-0123</td>
-                                    <td>Jhon Doe</td>
-                                    <td>$123</td>
-                                    <td>Paid</td>
-                                    <td><a class="btn btn-sm btn-primary" href="">Detail</a></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        {% if orders %}
+            <table id="orders-table" class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">Order Number</th>
+                    <th scope="col">Ordered User</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Created At</th>
+                    <th scope="col">Status </th>
+                    
+                  </tr>
+                </thead>
+                <tbody id="tbody">
+                {% for order in orders %}
+                  <tr>
+                    <th scope="row">{{order.order_number}}</a></th>
+                    <td>{{order.user.full_name}}</td>
+                    <td>{{order.order_total}}</td>
+                    <td>{{order.created_at}}</td>
+                    <td>{{order.status}}</td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            {% else %}
+                <h3 class="text-center alert alert-warning ">No Records Found</h3>
+            {% endif %}
                     </div>
                 </div>
             </div>
@@ -160,7 +140,7 @@
             <!-- Widgets Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="row g-4">
-                    <div class="col-sm-12 col-md-6 col-xl-6">
+                    <div class="col-12 ">
                         <div class="h-100 bg-light rounded p-4">
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <h6 class="mb-0">Calender</h6>
@@ -169,66 +149,180 @@
                             <div id="calender"></div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-6 col-xl-4">
-                        <div class="h-100 bg-light rounded p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-4">
-                                <h6 class="mb-0">To Do List</h6>
-                                <a href="">Show All</a>
-                            </div>
-                            <div class="d-flex mb-2">
-                                <input class="form-control bg-transparent" type="text" placeholder="Enter task">
-                                <button type="button" class="btn btn-primary ms-2">Add</button>
-                            </div>
-                            <div class="d-flex align-items-center border-bottom py-2">
-                                <input class="form-check-input m-0" type="checkbox">
-                                <div class="w-100 ms-3">
-                                    <div class="d-flex w-100 align-items-center justify-content-between">
-                                        <span>Short task goes here...</span>
-                                        <button class="btn btn-sm"><i class="fa fa-times"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center border-bottom py-2">
-                                <input class="form-check-input m-0" type="checkbox">
-                                <div class="w-100 ms-3">
-                                    <div class="d-flex w-100 align-items-center justify-content-between">
-                                        <span>Short task goes here...</span>
-                                        <button class="btn btn-sm"><i class="fa fa-times"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center border-bottom py-2">
-                                <input class="form-check-input m-0" type="checkbox" checked>
-                                <div class="w-100 ms-3">
-                                    <div class="d-flex w-100 align-items-center justify-content-between">
-                                        <span><del>Short task goes here...</del></span>
-                                        <button class="btn btn-sm text-primary"><i class="fa fa-times"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center border-bottom py-2">
-                                <input class="form-check-input m-0" type="checkbox">
-                                <div class="w-100 ms-3">
-                                    <div class="d-flex w-100 align-items-center justify-content-between">
-                                        <span>Short task goes here...</span>
-                                        <button class="btn btn-sm"><i class="fa fa-times"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center pt-2">
-                                <input class="form-check-input m-0" type="checkbox">
-                                <div class="w-100 ms-3">
-                                    <div class="d-flex w-100 align-items-center justify-content-between">
-                                        <span>Short task goes here...</span>
-                                        <button class="btn btn-sm"><i class="fa fa-times"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
             <!-- Widgets End -->
 
             {% endblock %}
+
+    {% block scripts %}
+        <script>
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            function applyfilter(){
+                var url = "{% url 'products:add_order_filter' %}"
+                var csrftoken = getCookie('csrftoken');
+                var from = document.getElementById("from").value
+                var to = document.getElementById("to").value
+                fetch(url,{
+                    method : "POST",
+                    headers:{
+                        "Content-type":"application/json",
+                        "X-CSRFToken":csrftoken,
+                    },
+                    body:JSON.stringify({
+                        from:from,
+                        to:to
+                    }),
+                })
+                .then(async function (response){
+                    const data =await response.json()
+                    if(data){
+                        data.order = JSON.parse(data.order);
+                        console.log(data)
+
+                        // Clear the existing table contents
+                        $('#orders-table tbody').empty();
+                        // Loop through the new data and generate HTML for each row
+                        $.each(data.order, function(index, order) {
+                            let tr = document.createElement('tr')
+                            let tbody = document.getElementById('tbody')
+                            let trdata = `<td>${order.fields.order_number}</td>
+                            <td>${order.fields.first_name} ${order.fields.last_name}</td>
+                            <td>${order.fields.order_total}</td>
+                            <td>${new Date(order.fields.created_at).toLocaleDateString()}</td>
+                            <td>${order.fields.status}</td>
+                            `
+                            tr.innerHTML = trdata
+                            tbody.appendChild(tr)
+                            var row = $('<tr>');
+                        });
+                    }
+                });
+            }
+        </script>
+            
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+                // Worldwide Sales Chart
+            var ctx1 = $("#worldwide-sales").get(0).getContext("2d");
+            var myChart1 = new Chart(ctx1, {
+                type: "bar",
+                data: {
+                    labels: [{% for product in products %} '{{product.product_name}}', {% endfor %}],
+                    datasets: [{
+                            label: "Stock",
+                            data: [{% for product in products %} {{product.stock}}, {% endfor %}],
+                            backgroundColor: "rgba(0, 156, 255, .7)"
+                        }, 
+                    ]
+                    },
+                options: {
+                    responsive: true
+                }
+            });
+
+
+            // Salse & Revenue Chart
+            var ctx2 = $("#salse-revenue").get(0).getContext("2d");
+            var myChart2 = new Chart(ctx2, {
+                type: "line",
+                data: {
+                    labels: [{% for date in dates %}'{{date|date:"d"}}',{% endfor %}],
+                    datasets: [{
+                            label: "Sales",
+                            data: [{% for sale in sales %}{{sale}},{% endfor %}],
+                            backgroundColor: "rgba(0, 156, 255, .5)",
+                            fill: true
+                        },
+
+                    ]
+                    },
+                options: {
+                    responsive: true
+                }
+            });
+            
+        </script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.6/jspdf.plugin.autotable.min.js"></script>
+
+        <script>
+            function exportData() {
+        var selectedOption = document.getElementById("export-options").value;
+
+        if (selectedOption == "excel") {
+            // call function to export to excel
+            exportTableToExcel('orders-table', 'Sales Report');
+        } else if (selectedOption == "pdf") {
+            // call function to download pdf
+            downloadPDF();
+
+        }
+        }
+        function exportTableToExcel(table_id, filename = 'Sales-report'){
+            var downloadLink;
+            var dataType = 'application/vnd.ms-excel';
+            var tableSelect = document.getElementById(table_id);
+            var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+
+            // Specify file name
+            filename = filename?filename+'.xls':'excel_data.xls';
+
+            // Create download link element
+            downloadLink = document.createElement("a");
+
+            document.body.appendChild(downloadLink);
+
+            if(navigator.msSaveOrOpenBlob){
+                var blob = new Blob(['\ufeff', tableHTML], {
+                    type: dataType
+                });
+                navigator.msSaveOrOpenBlob( blob, filename);
+            }else{
+                // Create a link to the file
+                downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+
+                // Setting the file name
+                downloadLink.download = filename;
+
+                //triggering the function
+                downloadLink.click();
+                location.reload()
+            }
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('orders-table');
+
+        // configure the html2pdf options
+            const options = {
+            filename: 'sales-report.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+        // convert the element to PDF
+        html2pdf().from(element).set(options).save();
+        }
+        </script>
+    {% endblock %}
            

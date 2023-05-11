@@ -5,6 +5,7 @@ from carts.models import CartItems
 from .forms import OrderForm
 from .models import Order,Payment,OrderProduct
 from products.models import Product
+from joejee.models import AddressBook
 import datetime
 
 from django.template.loader import render_to_string
@@ -63,7 +64,6 @@ def payment(request):
     send_email.send()
                    
     # send response back via Json
-    print(order.order_number,payment.payment_id)
     data ={
         'order_number': order.order_number,
         'transID': payment.payment_id,
@@ -84,7 +84,10 @@ def place_order(request,total=0,quantity=0,):
         quantity += cart_item.quantity
     tax = int(total * 0.04)
     grand_total = total + tax
-        
+    
+    active_Addr = AddressBook.objects.filter(user=request.user, status = True).first()
+      
+    
     if request.method == "POST":
         form = OrderForm(request.POST)
         if form.is_valid():

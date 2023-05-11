@@ -1,0 +1,11 @@
+<aside class="col-md-3">
+    <!--   SIDEBAR   -->
+    <ul class="list-group ">
+        <a style="color:black" class="list-group-item {% if '/dashboard/' == request.path %}active{% endif %}" href="{% url 'joejee:dashboard'%}"> Dashboard </a>
+        <a style="color:black" class="list-group-item {% if '/my_orders/' in request.path %}active{% endif %}" href="{% url 'joejee:my_orders'%}"> My orders </a>
+        <a style="color:black" class="list-group-item {% if '/my_addresses/' in request.path %}active{% endif %}" href="{% url 'joejee:my_addresses'%}"> Address Book </a>
+        <a style="color:black" class="list-group-item {% if '/change_password/' in request.path %}active{% endif %}" href="{% url 'joejee:change_password'%}"> Change Password </a>
+    </ul>
+    <br> 
+    <!--   SIDEBAR .//END   -->
+</aside>

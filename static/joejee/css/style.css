@@ -1590,8 +1590,34 @@ ol {
 	display: inline-block;
 }
 
-.product__details__pic__item {
-	position: relative;
+div.product__details__pic__item {
+	position: relative!important;
+}
+
+.magnifier-lens {
+	position: absolute;
+	width :100px;
+	height: 150px;
+	background-color: #46464633;
+	border: .1px solid #29292963;
+	opacity: 0;
+}
+
+.magnifier-lens.active {
+	opacity: 1;
+}
+
+.magnified-img{
+	height : 100%;
+	width : 100%;
+	background-color: #0173b2;
+	transform: scale(0.5);
+	opacity: 0;
+}
+.magnified-img.active {
+	opacity: 1;
+	transform: scale(1);
+
 }
 
 .product__details__pic__item a {
