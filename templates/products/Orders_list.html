@@ -30,22 +30,21 @@
                 <tbody>
                 {% for order in orders %}
                   <tr>
-                    <th scope="row"><a href="{% url 'products:admin_orders_details' order.order_number %}">{{order.order_number}}</a></th>
+                    <th scope="row"><a href="{% url 'products:admin_orders_details' order.order_number %}" id="order_number" >{{order.order_number}}</a></th>
                     <td>{{order.user.full_name}}</td>
                     <td>{{order.order_total}}</td>
                     <td>{{order.created_at}}</td>
-                    <td>{{order.status}}</td>
+                    <td id="order_change{{order.order_number}}">{{order.status}}</td>
                     <td>
-                      {% if order.status == 'New' %}
-                        <a href = "{% url 'products:admin_orders_confirm' order.order_number %}" onclick="return confirm('Are you sure you want to Confirm this Order?')" class ="btn btn-danger btn-sm">Confirm</a>
-                      {% elif order.status == 'Confirmed' %}
-                        <a href = "{% url 'products:admin_orders_shipping' order.order_number %}" onclick="return confirm('Are you sure you want to Start Shipping this Order?')" class ="btn btn-warning btn-sm">Start Shipping</a>
-                      {% elif order.status == 'shipping' %}
-                        <a href = "{% url 'products:admin_orders_delievered' order.order_number %}" onclick="return confirm('Is order Delivered?')" class ="btn btn-success btn-sm">Delivered</a>
-                      {% else %}
-                        <button class ="btn btn-secondary btn-sm" disabled >Cancel</button>
+                      {% if order.status != 'Delivered' %}
+                        <select class="float-right form-control" id="order-options" onchange="ChangeOrder({{order.order_number}})">
+                          <option value=" ">{{order.status}}</option>
+                            {% for stat in order.STATUS %}
+                            <option value="{{ stat.0 }}" {% if choice.0 == order.status %}selected{% endif %}>{{ stat.1 }}</option>
+                          {% endfor %}  
+                         </select>
                       {% endif %}
-                      
+                      </td>
                         {% comment %} {% url 'products:update_variation' var.id %} {% endcomment %}
                         {% comment %} <form action="{% url 'products:delete_variation' var.id %}" method="post" class="d-inline">{% csrf_token %}
                             <input type="submit" class="btn btn-danger btn-sm mx-2" value="Delete">
@@ -62,4 +61,48 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+  function ChangeOrder(order_number){
+      var url = "{% url 'products:change_order_status' %}"
+      var csrftoken = getCookie('csrftoken');
+      var option = document.getElementById("order-options").value
+          // Call your server to finalize the transaction 
+      fetch(url,{
+          method : "POST",
+          headers:{
+              "Content-type":"application/json",
+              "X-CSRFToken":csrftoken,
+          },
+          body:JSON.stringify({
+            option:option,
+            order_number:order_number
+          }),
+      })
+      .then(async function (response){
+          const data =await response.json()
+          if(data){
+            document.getElementById(`order_change${order_number}`).innerText = `${data.status}`
+          }
+      });
+  }
+</script>
+
 {% endblock %}

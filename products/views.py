@@ -305,6 +305,22 @@ def admin_orders_details(request,order_id):
     return render(request,'products/admin_order_detail.html',context)
 
 @login_required(login_url='joejee:user_signin')
+def change_order_status(request):
+    body = json.loads(request.body)
+    try:
+        order = Order.objects.get(order_number=body['order_number'])
+        order.status=body['option']
+        order.save()
+    except Order.DoesNotExist:
+        pass
+    data = {
+        'status':order.status,
+        'message':"Not a Valid Coupon"
+    }
+    return JsonResponse(data)
+        
+
+@login_required(login_url='joejee:user_signin')
 def admin_orders_confirm(request,order_id):
     order = Order.objects.get(order_number=order_id)
     order.status='Confirmed'

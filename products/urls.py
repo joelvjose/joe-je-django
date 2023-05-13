@@ -28,6 +28,7 @@ urlpatterns = [
     path('variations/add/',views.add_variation, name='add_variation'),
     
     path('orders', views.Admin_Orders, name="orders_list"),
+    path('orders/change_status',views.change_order_status, name='change_order_status'),
     path('orders/<int:order_id>/',views.admin_orders_details, name='admin_orders_details'),
     path('orders/confirm/<int:order_id>/',views.admin_orders_confirm, name='admin_orders_confirm'),
     path('orders/Shipping/<int:order_id>/',views.admin_orders_shipping, name='admin_orders_shipping'),
