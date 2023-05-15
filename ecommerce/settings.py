@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-gp6be9qb$wtdxpswo!r0(ug*qseznkf9vb%z8meq3u(6yxl65&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -89,9 +89,10 @@ AUTH_USER_MODEL = 'joejee.Account'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ecom',
+        'NAME': 'postgres',
         'USER': 'postgres',
-        'PASSWORD': 'admin',
+        'PASSWORD': 'Jeedhu174!',
+        'HOST': 'joejeedb.cnhcvxanhdl3.eu-north-1.rds.amazonaws.com',
     }
 }
 

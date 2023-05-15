@@ -18,11 +18,6 @@ from django.shortcuts import render
 
 @login_required(login_url='joejee:user_signin')
 def Admin_home(request):
-    # if 'from' in request.GET and 'to' in request.GET: 
-    #     start_date = datetime.strptime(request.GET['from'],'%Y-%m-%d')
-    #     end_date = datetime.strptime(request.GET['to'],'%Y-%m-%d')
-    #     orders = Order.objects.filter(created_at__gte=start_date, created_at__lte=end_date)
-    # else:
     orders = Order.objects.all().order_by('-created_at')[:5]
     # ordered_product = OrderProduct.objects.all().order_by('-created_at')[:5]
     products = Product.objects.all().order_by('-id')

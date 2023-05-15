@@ -45,10 +45,6 @@
                          </select>
                       {% endif %}
                       </td>
-                        {% comment %} {% url 'products:update_variation' var.id %} {% endcomment %}
-                        {% comment %} <form action="{% url 'products:delete_variation' var.id %}" method="post" class="d-inline">{% csrf_token %}
-                            <input type="submit" class="btn btn-danger btn-sm mx-2" value="Delete">
-                        </form> {% endcomment %}
                     </td>
                   </tr>
                 {% endfor %}
